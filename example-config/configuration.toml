@@ -1,0 +1,48 @@
+[Service]
+  Host = "172.17.0.1"
+  Port = 49990
+  ConnectRetries = 3
+  HealthCheck = ""
+  Labels = [ "opc-ua" ]
+  StartupMsg = "The opc-ua device service has started"
+  ReadMaxLimit = 256
+  Timeout = 5000
+
+[Consul]
+  Host = "localhost"
+  Port = 8500
+
+[Clients]
+  [Clients.Data]
+    Host = "localhost"
+    Port = 48080
+
+  [Clients.Metadata]
+    Host = "localhost"
+    Port = 48081
+
+[Device]
+  DataTransform = true
+  Discovery = false
+  InitCmd = ""
+  InitCmdArgs = ""
+  MaxCmdOps = 128
+  MaxCmdResultLen = 256
+  RemoveCmd = ""
+  RemoveCmdArgs = ""
+  ProfilesDir = ""
+  SendReadingsOnChanged = true
+
+[Logging]
+  RemoteURL = ""
+  File = "./device-opcua.log"
+
+[[DeviceList]]
+  Name = "Prosys OPC-UA Simulation Server"
+  Profile = "Prosys OPC-UA Simulation Server - Profile"
+  Description = "An OPC-UA device"
+  [DeviceList.Protocols]
+    [DeviceList.Protocols.OPC-UA]
+      Address = "172.17.0.1"
+      Port = 5350
+      Path = "/OPCUA/SimulationServer"
