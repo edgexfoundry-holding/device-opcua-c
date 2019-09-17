@@ -1,0 +1,135 @@
+name: "Prosys OPC-UA Simulation Server - Profile"
+manufacturer: "Prosys"
+description: "OPC-UA Example"
+labels:
+  - "opc-ua"
+
+deviceResources:
+      - name: Counter1
+        description: "A Simulated Counter"
+        attributes:
+          { nodeID: "Counter1" , nsIndex: "5", IDType: "STRING", monitored: "True" }
+        properties:
+            value:
+                { type: "Uint32", readWrite: "R", defaultValue: "0" }
+            units:
+                { type: "String", readWrite: "R", defaultValue: "String" }
+
+      - name: StaticUInt32
+        description: "A static UInt32 variable"
+        attributes:
+          { nodeID: "UInt32" , nsIndex: "3", IDType: "STRING" }
+        properties:
+          value:
+            { type: "Uint32", readWrite: "RW", defaultValue: "0" }
+          units:
+            { type: "String", readWrite: "R", defaultValue: "Integer" }
+
+      - name: StringStatic
+        description: "A static string variable"
+        attributes:
+          { nodeID: "String" , nsIndex: "3", IDType: "STRING" }
+        properties:
+          value:
+            { type: "String", readWrite: "RW", defaultValue: "" }
+          units:
+            { type: "String", readWrite: "R", defaultValue: "Integer" }
+
+      - name: ServerState
+        description: "The Server State"
+        attributes:
+          { nodeID: "2259" , nsIndex: "0", IDType: "NUMERIC" }
+        properties:
+          value:
+            { type: "Int32", readWrite: "RW", defaultValue: "0" }
+          units:
+            { type: "String", readWrite: "R", defaultValue: "Int32" }
+deviceCommands:
+  - name: Counter1
+    get:
+      - { index: "1", operation: "get", object: "Counter1", parameter: "Counter1", property: "value" }
+
+  - name: StaticUInt32
+    get:
+    - { index: "1", operation: "get", object: "StaticUInt32", parameter: "StaticUInt32", property: "value" }
+    set:
+    - { index: "1", operation: "set", object: "StaticUInt32", parameter: "StaticUInt32", property: "value" }
+
+  - name: StringStatic
+    get:
+    - { index: "1", operation: "get", object: "StringStatic", parameter: "StringStatic", property: "value" }
+    set:
+    - { index: "1", operation: "set", object: "StringStatic", parameter: "StringStatic", property: "value" }
+
+  - name: ServerState
+    get:
+    - { index: "1", operation: "get", object: "ServerState", parameter: "ServerState", property: "value" }
+
+coreCommands:
+  - name: Counter1
+    get:
+        path: "/api/v1/device/{deviceId}/Counter1"
+        responses:
+          -
+            code: "200"
+            description: "Get the Counter1 reading."
+            expectedValues: ["Counter1"]
+          -
+            code: "503"
+            description: "service unavailable"
+            expectedValues: []
+
+  - name: StringStatic
+    get:
+      path: "/api/v1/device/{deviceId}/StringStatic"
+      responses:
+      -
+        code: "200"
+        description: "Get the StringStatic reading."
+        expectedValues: ["StringStatic"]
+      -
+        code: "503"
+        description: "service unavailable"
+        expectedValues: []
+    put:
+      path: "/api/v1/device/{deviceId}/StringStatic"
+      parameterNames: ["StringStatic"]
+      responses:
+      - code: "200"
+        description: "Successfully set the StringStatic value."
+        expectedValues: []
+      - code: "503"
+        description: "service unavailable"
+        expectedValues: []
+
+  - name: StaticUInt32
+    get:
+      path: "/api/v1/device/{deviceId}/StaticUInt32"
+      responses:
+      - code: "200"
+        description: "Get the static UInt32 value."
+        expectedValues: ["StaticUInt32"]
+      - code: "503"
+        description: "service unavailable"
+        expectedValues: []
+    put:
+      path: "/api/v1/device/{deviceId}/StaticUInt32"
+      parameterNames: ["StaticUInt32"]
+      responses:
+      - code: "200"
+        description: "Successfully set the StaticUInt32 value."
+        expectedValues: []
+      - code: "503"
+        description: "service unavailable"
+        expectedValues: []
+
+  - name: ServerState
+    get:
+      path: "/api/v1/device/{deviceId}/ServerState"
+      responses:
+      - code: "200"
+        description: "Get the ServerState."
+        expectedValues: ["ServerState"]
+      - code: "503"
+        description: "service unavailable"
+        expectedValues: []
