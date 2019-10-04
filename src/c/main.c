@@ -676,7 +676,7 @@ static UA_Variant *edgex_to_opcua(edgex_device_commandresult result,
   switch (result.type)
   {
     case Bool:
-      UA_Variant_setScalar(value, &result.value.bool_result,
+      UA_Variant_setScalarCopy(value, &result.value.bool_result,
         &UA_TYPES[UA_TYPES_BOOLEAN]);
       iot_log_debug(uadr->lc, "Writing data of type %s with value %d.",
                      value->type->typeName, result.value.bool_result);
