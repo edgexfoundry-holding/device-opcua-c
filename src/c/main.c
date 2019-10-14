@@ -574,7 +574,7 @@ static edgex_device_commandresult opcua_to_edgex(UA_Variant *value,
    * possible to get a malformed UA_Variant passed to us - attempt to deal with
    * this gracefully.
    */
-  if (!value || !value->type || !value->type->typeIndex)
+  if (!value || !value->type)
   {
     iot_log_debug(uadr->lc, "Malformed UA_Variant.");
     return result;
