@@ -11,7 +11,7 @@ deviceResources:
           { nodeID: "Counter1" , nsIndex: "5", IDType: "STRING", monitored: "True" }
         properties:
             value:
-                { type: "Uint32", readWrite: "R", defaultValue: "0" }
+                { type: "Uint32", readWrite: "R" }
             units:
                 { type: "String", readWrite: "R", defaultValue: "String" }
 
@@ -21,7 +21,7 @@ deviceResources:
           { nodeID: "UInt32" , nsIndex: "3", IDType: "STRING" }
         properties:
           value:
-            { type: "Uint32", readWrite: "RW", defaultValue: "0" }
+            { type: "Uint32", readWrite: "RW" }
           units:
             { type: "String", readWrite: "R", defaultValue: "Integer" }
 
@@ -31,7 +31,7 @@ deviceResources:
           { nodeID: "String" , nsIndex: "3", IDType: "STRING" }
         properties:
           value:
-            { type: "String", readWrite: "RW", defaultValue: "" }
+            { type: "String", readWrite: "RW" }
           units:
             { type: "String", readWrite: "R", defaultValue: "Integer" }
 
@@ -41,29 +41,9 @@ deviceResources:
           { nodeID: "2259" , nsIndex: "0", IDType: "NUMERIC" }
         properties:
           value:
-            { type: "Int32", readWrite: "RW", defaultValue: "0" }
+            { type: "Int32", readWrite: "R" }
           units:
             { type: "String", readWrite: "R", defaultValue: "Int32" }
-deviceCommands:
-  - name: Counter1
-    get:
-      - { index: "1", operation: "get", object: "Counter1", parameter: "Counter1", property: "value" }
-
-  - name: StaticUInt32
-    get:
-    - { index: "1", operation: "get", object: "StaticUInt32", parameter: "StaticUInt32", property: "value" }
-    set:
-    - { index: "1", operation: "set", object: "StaticUInt32", parameter: "StaticUInt32", property: "value" }
-
-  - name: StringStatic
-    get:
-    - { index: "1", operation: "get", object: "StringStatic", parameter: "StringStatic", property: "value" }
-    set:
-    - { index: "1", operation: "set", object: "StringStatic", parameter: "StringStatic", property: "value" }
-
-  - name: ServerState
-    get:
-    - { index: "1", operation: "get", object: "ServerState", parameter: "ServerState", property: "value" }
 
 coreCommands:
   - name: Counter1
