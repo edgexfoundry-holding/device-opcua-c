@@ -1006,6 +1006,10 @@ static bool opcua_get_handler(void *impl, const char *devname,
         UA_Variant_delete(value);
       }
     }
+    else
+    {
+      return false;
+    }
   }
   return true;
 }
@@ -1080,6 +1084,10 @@ static bool opcua_put_handler(void *impl, const char *devname,
         }
         UA_Variant_delete(value);
       }
+    }
+    else
+    {
+      return false;
     }
   }
   return true;
