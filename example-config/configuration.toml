@@ -1,5 +1,4 @@
 [Service]
-  Host = "172.17.0.1"
   Port = 49990
   ConnectRetries = 3
   HealthCheck = ""
@@ -7,10 +6,6 @@
   StartupMsg = "The opc-ua device service has started"
   ReadMaxLimit = 256
   Timeout = 5000
-
-[Consul]
-  Host = "localhost"
-  Port = 8500
 
 [Clients]
   [Clients.Data]
@@ -35,7 +30,7 @@
 
 [Logging]
   RemoteURL = ""
-  File = "./device-opcua.log"
+  File = "-"
 
 [[DeviceList]]
   Name = "Prosys OPC-UA Simulation Server"
