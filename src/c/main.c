@@ -11,8 +11,6 @@
 #include "edgex/eventgen.h"
 #include "open62541/open62541.h"
 
-#define __STDC_FORMAT_MACROS
-
 #include <inttypes.h>
 
 #include <unistd.h>
@@ -211,6 +209,7 @@ static const UA_NodeId get_subscription_nodeid(edgex_deviceresource *resource)
   char *nsIndex = "";
   char *IDType = "";
   char * endpt;
+  UA_UInt16 id;
   UA_NodeId nodeId = UA_NODEID_NULL;
   edgex_nvpairs *nvp = resource->attributes;
 
@@ -230,26 +229,25 @@ static const UA_NodeId get_subscription_nodeid(edgex_deviceresource *resource)
   if (!subscription)
     return nodeId;
 
+  id = (UA_UInt16)strtol(nsIndex,&endpt,10);
   if (strcmp(IDType,"STRING") == 0)
   {
-    nodeId = UA_NODEID_STRING((UA_UInt16)strtol(nsIndex,&endpt,10), strID);
+    nodeId = UA_NODEID_STRING(id, strID);
   }
   else if (strcmp(IDType,"NUMERIC") == 0)
   {
-    nodeId = UA_NODEID_NUMERIC((UA_UInt16)strtol(nsIndex,&endpt,10),
-      (UA_UInt32)strtol(strID,&endpt,10));
+    nodeId = UA_NODEID_NUMERIC(id, (UA_UInt32)strtol(strID,&endpt,10));
   }
   else if (strcmp(IDType,"BYTESTRING") == 0)
   {
-    nodeId = UA_NODEID_BYTESTRING((UA_UInt16)strtol(nsIndex,&endpt,10),
-      strID);
+    nodeId = UA_NODEID_BYTESTRING(id, strID);
   }
   else if (strcmp(IDType,"GUID") == 0)
   {
     UA_Guid guid;
     UA_Guid_init(&guid);
     sscanf(strID,UA_PRINTF_GUID_FORMAT,UA_SCANF_GUID_DATA(guid));
-    nodeId = UA_NODEID_GUID((UA_UInt16)strtol(nsIndex,&endpt,10), guid);
+    nodeId = UA_NODEID_GUID(id, guid);
   }
 
   return nodeId;
@@ -523,6 +521,7 @@ static const UA_NodeId get_ua_nodeid(edgex_device_commandrequest request)
   char *strID = "";
   char *namespaceIndex = "";
   char *IDType = "";
+  UA_UInt16 id;
 
   const edgex_nvpairs *nvp = request.attributes;
   while (nvp != NULL)
@@ -539,26 +538,25 @@ static const UA_NodeId get_ua_nodeid(edgex_device_commandrequest request)
   char * endpt;
   UA_NodeId nodeId = UA_NODEID_NULL;
 
+  id = (UA_UInt16)strtol(namespaceIndex,&endpt,10);
   if (strcmp(IDType,"STRING") == 0)
   {
-    nodeId = UA_NODEID_STRING((UA_UInt16)strtol(namespaceIndex,&endpt,10), strID);
+    nodeId = UA_NODEID_STRING(id, strID);
   }
   else if (strcmp(IDType,"NUMERIC") == 0)
   {
-    nodeId = UA_NODEID_NUMERIC((UA_UInt16)strtol(namespaceIndex,&endpt,10),
-      (UA_UInt32)strtol(strID,&endpt,10));
+    nodeId = UA_NODEID_NUMERIC(id, (UA_UInt32)strtol(strID,&endpt,10));
   }
   else if (strcmp(IDType,"BYTESTRING") == 0)
   {
-    nodeId = UA_NODEID_BYTESTRING((UA_UInt16)strtol(namespaceIndex,&endpt,10),
-      strID);
+    nodeId = UA_NODEID_BYTESTRING(id, strID);
   }
   else if (strcmp(IDType,"GUID") == 0)
   {
     UA_Guid guid;
     UA_Guid_init(&guid);
     sscanf(strID,UA_PRINTF_GUID_FORMAT,UA_SCANF_GUID_DATA(guid));
-    nodeId = UA_NODEID_GUID((UA_UInt16)strtol(namespaceIndex,&endpt,10), guid);
+    nodeId = UA_NODEID_GUID(id, guid);
   }
 
   return nodeId;
@@ -760,23 +758,20 @@ static UA_Variant *edgex_to_opcua(edgex_device_commandresult result,
 /* Methods checks for the addressable indicating a client is connecting */
 static bool ua_is_connecting(ua_conn_addr_status *status, const char *addr_id)
 {
+  bool ret = false;
   pthread_mutex_lock(&status->mutex);
   ua_addr *current = status->front;
-  for (uint32_t i = 0; i < status->length; i++)
+  while (current && strcmp(current->addr_id, addr_id))
   {
-    if (strcmp(current->addr_id, addr_id) == 0)
-    {
-      pthread_mutex_unlock(&status->mutex);
-      return true;
-    }
-    if (current->next != NULL)
-      current = current->next;
+    current = current->next;
   }
+  if (current)
+    ret = true;
   pthread_mutex_unlock(&status->mutex);
-  return false;
+  return ret;
 }
 
-static bool add_ua_connecting(ua_conn_addr_status *status, const char *addr_id)
+static void add_ua_connecting(ua_conn_addr_status *status, const char *addr_id)
 {
   pthread_mutex_lock(&status->mutex);
   ua_addr *new = malloc(sizeof (ua_addr));
@@ -794,7 +789,6 @@ static bool add_ua_connecting(ua_conn_addr_status *status, const char *addr_id)
   }
   status->length++;
   pthread_mutex_unlock(&status->mutex);
-  return true;
 }
 
 static bool remove_ua_connecting(ua_conn_addr_status *status,
@@ -972,14 +966,12 @@ static bool opcua_get_handler(void *impl, const char *devname,
   /* Test the resulting connection, NULL if we failed to create it  */
   if (!conn)
   {
-    iot_log_warning(driver->lc, "Failed to connect to Addressable: %s",
-      protocols->name);
+    iot_log_warning(driver->lc, "Failed to connect to endpoint: %s", devname);
     return false;
   }
   else if (conn->client == NULL)
   {
-    iot_log_warning(driver->lc, "Failed to connect to Addressable: %s",
-      protocols->name);
+    iot_log_warning(driver->lc, "Failed to connect to endpoint: %s", devname);
     free(conn->addr_id);
     free(conn->endpoint);
     free(conn);
@@ -1052,14 +1044,12 @@ static bool opcua_put_handler(void *impl, const char *devname,
   /* Test the resulting connection, NULL if we failed to create it */
   if (!conn)
   {
-    iot_log_warning(driver->lc, "Failed to connect to Addressable: %s",
-      protocols->name);
+    iot_log_warning(driver->lc, "Failed to connect to endpoint: %s", devname);
     return false;
   }
   else if (conn->client == NULL)
   {
-    iot_log_warning(driver->lc, "Failed to connect to Addressable: %s",
-      protocols->name);
+    iot_log_warning(driver->lc, "Failed to connect to endpoint: %s", devname);
     free(conn->addr_id);
     free(conn->endpoint);
     free(conn);
