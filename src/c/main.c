@@ -1008,6 +1008,7 @@ static bool opcua_get_handler(void *impl, const char *devname,
     }
     else
     {
+      iot_log_error(driver->lc, "Endpoint %s no longer contactable", devname);
       return false;
     }
   }
@@ -1087,6 +1088,7 @@ static bool opcua_put_handler(void *impl, const char *devname,
     }
     else
     {
+      iot_log_error(driver->lc, "Endpoint %s no longer contactable", devname);
       return false;
     }
   }
