@@ -1006,6 +1006,11 @@ static bool opcua_get_handler(void *impl, const char *devname,
         UA_Variant_delete(value);
       }
     }
+    else
+    {
+      iot_log_error(driver->lc, "Endpoint %s no longer contactable", devname);
+      return false;
+    }
   }
   return true;
 }
@@ -1080,6 +1085,11 @@ static bool opcua_put_handler(void *impl, const char *devname,
         }
         UA_Variant_delete(value);
       }
+    }
+    else
+    {
+      iot_log_error(driver->lc, "Endpoint %s no longer contactable", devname);
+      return false;
     }
   }
   return true;
