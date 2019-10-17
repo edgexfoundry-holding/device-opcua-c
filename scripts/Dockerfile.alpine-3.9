@@ -28,4 +28,4 @@ COPY --from=builder /usr/local/lib/libopen62541* /usr/local/lib/
 
 COPY res /res
 
-ENTRYPOINT ["/device-opcua-c","--confdir","/res"]
+ENTRYPOINT ["/device-opcua-c","--confdir","/res","--registry","consul://edgex-core-consul:8500"]
