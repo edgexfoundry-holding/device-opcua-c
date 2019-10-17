@@ -9,13 +9,15 @@
 #include "edgex/devsdk.h"
 #include "edgex/device-mgmt.h"
 #include "edgex/eventgen.h"
-#include "open62541/open62541.h"
+#include "open62541.h"
 
 #include <inttypes.h>
 
 #include <unistd.h>
 #include <signal.h>
 #include <string.h>
+
+#define UA_sleep_ms(X) usleep(X * 1000)
 
 #define ERR_CHECK(x) if ((x).code) { fprintf (stderr, "Error: %d: %s\n", (x).code, (x).reason); edgex_device_service_free (service); free_subs(impl->subs); free (impl); return (x).code; }
 
@@ -1268,7 +1270,7 @@ int main(int argc, char *argv[])
         UA_StatusCode retval = UA_Client_getState(current->client);
         if (retval >= UA_CLIENTSTATE_SESSION)
         {
-          UA_Client_run_iterate(current->client, 0);
+          UA_Client_runAsync(current->client, 500);
         }
         pthread_mutex_unlock(&current->mutex);
         if (current->next != NULL)
