@@ -1,8 +1,8 @@
 FROM alpine:3.9 as builder
-RUN apk add --update --no-cache build-base git gcc cmake make linux-headers wget mbedtls-dev python3 py-six libmicrohttpd-dev curl-dev yaml-dev util-linux-dev
+RUN apk add --update --no-cache build-base git gcc cmake make linux-headers wget python3 py-six libmicrohttpd-dev curl-dev yaml-dev util-linux-dev
 
-RUN wget -O open62541.tar.gz https://github.com/IOTechSystems/open62541/archive/device-opcua-v0.1.0.tar.gz && tar -z -x -f open62541.tar.gz \
-    && cd open62541-device-opcua-v0.1.0 && mkdir build && cd build && cmake .. -DBUILD_SHARED_LIBS=ON -DUA_ENABLE_ENCRYPTION=ON -DUA_ENABLE_AMALGAMATION=ON \
+RUN wget -O open62541.zip https://github.com/open62541/open62541/archive/v0.3.1.zip && unzip open62541.zip \
+    && cd open62541-0.3.1 && mkdir build && cd build && cmake .. -DBUILD_SHARED_LIBS=ON -DUA_ENABLE_AMALGAMATION=ON \
     && make install
 
 COPY scripts /device-opcua-c/scripts
@@ -17,14 +17,14 @@ RUN /device-opcua-c/scripts/build.sh
 
 FROM alpine:3.9
 MAINTAINER iotech <support@iotechsys.com>
-RUN apk add --update --no-cache mbedtls linux-headers yaml libmicrohttpd curl libuuid
+RUN apk add --update --no-cache linux-headers yaml libmicrohttpd curl libuuid
 
 COPY --from=builder /device-opcua-c/build/release/device-opcua-c/c/device-opcua-c /device-opcua-c 
 COPY --from=builder /usr/lib/libcsdk.so /usr/lib
 COPY --from=builder /usr/include/edgex /usr/include/edgex
 COPY --from=builder /usr/include/iot /usr/include/iot
 COPY --from=builder /usr/local/lib/libcbor* /usr/local/lib/
-COPY --from=builder /usr/local/lib/libopen62541* /usr/local/lib/
+COPY --from=builder /usr/local/lib64/libopen62541* /usr/local/lib64/
 
 COPY res /res
 
