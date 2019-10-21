@@ -62,7 +62,7 @@ found at ./build/{debug,release}/device-opcua-c/c/device-opcua-c.
 
 With no options specified the service runs with a name of "device-opcua", the
 default configuration profile, no registry and a configuration directory of
-res/.
+`res/`.
 These settings may be changed on the command line as follows:
 
 ```
@@ -260,6 +260,6 @@ connect to the simulation server), the following command could be issued:
 
 where `<deviceId>` and `<commandId>` are the values noted previously.
 
-This shoudl give output similar to the following:
+This should give output similar to the following:
 
 `{"device":"Prosys OPC-UA Simulation Server","origin":1571659730682,"readings":[{"name":"StringStatic","value":"TestString","origin":1571659730682}]}`
