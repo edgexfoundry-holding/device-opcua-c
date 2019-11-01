@@ -1,5 +1,5 @@
 [Service]
-  Port = 49990
+  Port = 49952
   ConnectRetries = 3
   HealthCheck = ""
   Labels = [ "opc-ua" ]
@@ -39,5 +39,5 @@
   [DeviceList.Protocols]
     [DeviceList.Protocols.OPC-UA]
       Address = "172.17.0.1"
-      Port = 5350
+      Port = 53530
       Path = "/OPCUA/SimulationServer"
