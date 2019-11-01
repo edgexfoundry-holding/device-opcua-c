@@ -213,7 +213,13 @@ configured and running on the same host machine as the OPC-UA device service.
 The files located in the `example-config` directory can be used to create a
 device service which will connect to a remote simulation server.
 
-The example device service configuration and profile files should first be
+For this example we will be making use of the `String` node.  On your running
+simulation server, locate the `Objects/StaticData/StaticVariables/String` node
+within the Address Space and ensure that the nodeId matches the `StringStatic`
+deviceResource present in the `example-config/ProSysSimulator.yaml` file,
+updating the file appropriately if it does not.
+
+The example device service configuration and profile files should be
 copied into the `res` directory.
 
 ```
@@ -237,12 +243,12 @@ which the container is to be attached to.
 
 Verify that the example OPC-UA device has been added to the network.
 
-`curl -s http://edgex-core-command:48082/api/v1/device`
+`curl http://edgex-core-command:48082/api/v1/device`
 
 Take note of the `id` which has been assigned to the example device.  The
 list of available commands for this device can also be displayed.
 
-`curl -s http://edgex-core-command:48082/api/v1/device/<deviceId>`
+`curl http://edgex-core-command:48082/api/v1/device/<deviceId>`
 
 where `<deviceId>` is the id displayed by the previous `curl` command.  Take
 note of the `id` value which has been assigned to the `StringStatic` attribute.
@@ -256,7 +262,7 @@ A connection to the server can now be made and GET/PUT requests issued. So,
 for example, to request a GET of the `StringStatic` attribute (and implicitly
 connect to the simulation server), the following command could be issued:
 
-`curl -s edgex-core-command:48082/api/v1/device/<deviceId>/command/<commandId>`
+`curl edgex-core-command:48082/api/v1/device/<deviceId>/command/<commandId>`
 
 where `<deviceId>` and `<commandId>` are the values noted previously.
 
